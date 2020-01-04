@@ -45,6 +45,10 @@ fpc_sec <- function(x, h, f, ...){
 fpc_sec(x = c(1, 1), h = 1e-8, f = rosenbrock)
 fpc_sec(x = c(5, 3, 6, 4), h = 1e-8, f = f)
 
+### all methods decribed for complex-step differentiation adapted from:
+### Ridout, M. S. (2009). Statistical Applications of the Complex-Step Method of 
+### Numerical Differentiation. The American Statistician, 63(1), 66-74.
+
 # this function uses the derivative functions created above in a quasi-newton optimization module
 complex_newton <- function(objective, parm, hessian = F, tol = .Machine$double.eps, ...){
   k <- 1
