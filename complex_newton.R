@@ -81,6 +81,60 @@ complex_newton <- function(objective, parm, hessian = F, tol = .Machine$double.e
   out
 }
 
+
+######### updated module -- estimates first as second derivatives simultaneously ##########
+fpc <- function(x, h, f, ...){
+  k <- length(x)
+  jac <- numeric(length = k)
+  hes <- matrix(0, k, k)
+  pmat <- diag(1, k)
+  for(m in 1:k){
+    for(n in 1:k){
+      comp.x <- complex(length.out = k, real = x, imaginary = h*pmat[, n])
+      eval.a <- f(comp.x + h*pmat[, m], ...)
+      eval.s <- f(comp.x - h*pmat[, m], ...)
+      if(n == m){
+        jac[m] <- Im(eval.a + eval.s)
+      }
+      hes[n, m] <- Im(eval.a - eval.s)
+    }
+  }
+  jac <- jac / (2*h)
+  hes <- hes / (2*h*h)
+  out <- list(first_deriv = jac,
+              second_deriv = hes)
+  out
+}
+
+
+## updated optimizer--reflects changes in derivative modules ##
+complex_newton <- function(objective, parm, hessian = F, tol = sqrt(.Machine$double.eps), max.iter = Inf, ...){
+  k <- 1
+  grad <- Inf
+  
+  while(sqrt(sum(grad^2)) > tol & k < max.iter){
+    eval <- fpc(x = parm, h = 1e-8, f = objective, ...)
+    grad <- eval$first_deriv
+    hess <- eval$second_deriv
+    p    <- solve(hess) %*% -grad
+    parm <- parm + p
+    k <- k + 1
+  }
+  
+  if(hessian){
+    out <- list(parm = parm,
+                value = objective(parm, ...),
+                ierations = k,
+                hessian = hess)
+  } else {
+    out <- list(parm = parm,
+                value = objective(parm, ...),
+                ierations = k) 
+  }
+  
+  out
+}
+
 # testing on rosebrock function -- gives good results
 complex_newton(objective = rosenbrock, parm = c(1, -1.2))
 
