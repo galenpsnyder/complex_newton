@@ -101,7 +101,8 @@ fpc <- function(var, h, f, ...){
   }
   jac <- jac / (2*h)
   hes <- hes / (2*h*h)
-  out <- list(first_deriv = jac,
+  out <- list(value = Re(eval.a),
+              first_deriv = jac,
               second_deriv = hes)
   out
 }
@@ -123,12 +124,12 @@ complex_newton <- function(objective, parm, hessian = F, tol = sqrt(.Machine$dou
   
   if(hessian){
     out <- list(parm = parm,
-                value = objective(parm, ...),
+                value = eval$value,
                 ierations = iter,
                 hessian = hess)
   } else {
     out <- list(parm = parm,
-                value = objective(parm, ...),
+                value = eval$value,
                 ierations = iter) 
   }
   
