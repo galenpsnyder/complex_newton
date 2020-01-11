@@ -89,10 +89,11 @@ fpc <- function(var, h, f, ...){
   hes  <- matrix(0, nvar, nvar)
   pmat <- diag(1, nvar)
   for(m in 1:nvar){
+    pmat.i <- h*pmat[, m]
     for(n in 1:m){
       comp.var <- complex(length.out = nvar, real = var, imaginary = h*pmat[, n])
-      eval.a   <- f(comp.var + h*pmat[, m], ...)
-      eval.s   <- f(comp.var - h*pmat[, m], ...)
+      eval.a   <- f(comp.var + pmat.i, ...)
+      eval.s   <- f(comp.var - pmat.i, ...)
       if(n == m){
         jac[m] <- Im(eval.a + eval.s)
       }
