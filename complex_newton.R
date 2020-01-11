@@ -117,8 +117,8 @@ complex_newton <- function(objective, parm, hessian = F, tol = sqrt(.Machine$dou
     eval <- fpc(var = parm, h = 1e-10, f = objective, ...)
     grad <- eval$first_deriv
     hess <- eval$second_deriv
-    ch.h <- chol(hess)
-    p    <- chol2inv(ch.h) %*% -grad
+    qr.h <- qr(hess)
+    p    <- qr.solve(qr.h, -grad)
     parm <- parm + p
     iter <- iter + 1
   }
