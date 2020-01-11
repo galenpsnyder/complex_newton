@@ -114,10 +114,11 @@ complex_newton <- function(objective, parm, hessian = F, tol = sqrt(.Machine$dou
   grad <- Inf
   
   while(sqrt(sum(grad^2)) > tol & iter < max.iter){
-    eval <- fpc(var = parm, h = 1e-8, f = objective, ...)
+    eval <- fpc(var = parm, h = 1e-10, f = objective, ...)
     grad <- eval$first_deriv
     hess <- eval$second_deriv
-    p    <- solve(hess) %*% -grad
+    ch.h <- chol(hess)
+    p    <- chol2inv(ch.h) %*% -grad
     parm <- parm + p
     iter <- iter + 1
   }
